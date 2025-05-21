@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+  <meta charset="UTF-8">
+  <title>BME280 Monitoring - Blynk</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f1f1f1;
+      text-align: center;
+      padding: 50px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .value {
+      font-size: 2rem;
+      color: #007bff;
+    }
+
+    .label {
+      font-size: 1rem;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>BME280 Sensor Ma'lumotlari</h1>
+
+  <div class="card">
+    <div class="label">🌡️ Harorat (°C)</div>
+    <div class="value" id="temperature">--</div>
+  </div>
+
+  <div class="card">
+    <div class="label">📈 Bosim (hPa)</div>
+    <div class="value" id="pressure">--</div>
+  </div>
+
+  <div class="card">
+    <div class="label">💧 Namlik (%)</div>
+    <div class="value" id="humidity">--</div>
+  </div>
+
+  <div class="card">
+    <div class="label">⛰️ Balandlik (m)</div>
+    <div class="value" id="altitude">--</div>
+  </div>
+
+  <script>
+    const token = "Jfs7DAWZabYA7b3f5SMZTJT99OsFJ9Df";
+
+    async function getValue(pin) {
+      try {
+        const res = await fetch(`https://blynk.cloud/external/api/get?token=${token}&${pin}`);
+        if (!res.ok) throw new Error("Tarmoq xatosi");
+        const text = await res.text();
+        if (text === "null" || text === "") return "--";
+        return text;
+      } catch (e) {
+        return "--";
+      }
+    }
+
+    async function fetchData() {
+      document.getElementById('temperature').textContent = await getValue("v0");
+      document.getElementById('pressure').textContent = await getValue("v1");
+      document.getElementById('humidity').textContent = await getValue("v2");
+      document.getElementById('altitude').textContent = await getValue("v3");
+    }
+
+    setInterval(fetchData, 2000);
+    fetchData(); // Dastlab sahifa yuklanganda
+  </script>
+
+</body>
+
+</html>
